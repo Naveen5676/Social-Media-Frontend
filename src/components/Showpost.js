@@ -1,16 +1,16 @@
 import React, { useEffect, useRef, useState } from "react";
 import axios from "axios";
 
-const Showpost = () => {
+const Showpost = (props) => {
   const [userdata, setUserData] = useState();
   const [loading, setLoading] = useState(true);
   const [displaycomment, setDisplayComment] = useState(true);
   const [commentdata, setCommentData] = useState([]);
   const [callapi, setCallApi] = useState(false);
 
-  const [commenttext, setCommentText] = useState('');
+  const [commenttext, setCommentText] = useState("");
 
-  const commentref = useRef('');
+  // const commentref = useRef('');
 
   function hideComments() {
     setDisplayComment(!displaycomment);
@@ -20,7 +20,7 @@ const Showpost = () => {
     e.preventDefault();
     console.log(id);
     //const commenttext = commentref.current.value;
-    console.log(commenttext)
+    console.log(commenttext);
 
     const newcomment = {
       comment: commenttext,
@@ -32,7 +32,7 @@ const Showpost = () => {
       .then(() => {
         console.log("comment sent");
         setCallApi(!callapi);
-        setCommentText('');
+        setCommentText("");
       })
       .catch((err) => {
         console.log(err);
@@ -50,7 +50,7 @@ const Showpost = () => {
       .catch((err) => {
         console.log(err);
       });
-  }, [setCallApi]);
+  }, [props.ChangedData]);
 
   useEffect(() => {
     axios
@@ -59,39 +59,85 @@ const Showpost = () => {
         setCommentData(response.data);
       })
       .catch((err) => console.log(err));
-  }, [setCallApi]);
+  }, [callapi]);
 
   return (
-    <div>
+    <div
+      style={{
+        display: "flex",
+        flexDirection: "column",
+        alignItems: "center",
+        justifyContent: "center",
+      }}
+    >
       {loading ? (
         <h1>Loading</h1>
       ) : (
         <div>
+          {console.log("props", props.ChangedData)}
           {userdata.map((data, index) => (
             <div
               key={index}
-              style={{ margin: "20px", border: "1px solid black" }}
+              style={{
+                backgroundColor: "#666666",
+                padding: "20px",
+                width: "100%",
+                maxWidth: "50%",
+                border: "1px solid black",
+                margin: "20px auto",
+                display: "flex",
+                flexDirection: "column",
+                alignItems: "center",
+              }}
             >
-              <img src={data.imageurl} alt="Post" style={{ maxWidth: "50%" }} />
-              <p>{data.description}</p>
-              <button onClick={hideComments}>Add Comment</button>
+              <img
+                src={data.imageurl}
+                alt="Post"
+                style={{ maxWidth: "100%", alignSelf: "center" }}
+              />
+              <p style={{ color: "white", fontSize: "20px" }}>
+                {" "}
+                User - {data.description}
+              </p>
+              <button
+                style={{ margin: "10px", fontSize: "20px" }}
+                onClick={hideComments}
+              >
+                Add Comment
+              </button>
               {displaycomment ? (
                 <div></div>
               ) : (
                 <div>
-                  <form onSubmit={(e) => commentDataHandler(data.id, e)}>
-                  {/* <input type="text" ref={commentref} /> */}
-                  <input type="text" value={commenttext} onChange={(e) => setCommentText(e.target.value)} />
-                    <button>Send</button>
+                  <form
+                    onSubmit={(e) => commentDataHandler(data.id, e)}
+                    style={{ display: "flex", alignItems: "center" }}
+                  >
+                    <input
+                      type="text"
+                      value={commenttext}
+                      onChange={(e) => setCommentText(e.target.value)}
+                      style={{ marginRight: "10px" , fontSize:'15px'}}
+                    />
+                    <button style={{ marginLeft: "10px" , fontSize:'15px'}}>Send</button>
                   </form>
-                  <div>
+
+                  <div style={{ margin: "10px", fontSize: "20px" }}>
                     {commentdata && commentdata.length > 0 ? (
                       <div>
                         {commentdata
-                          .filter((comment) => comment.socialmediadatumId === data.id) // Filter comments based on postId
+                          .filter(
+                            (comment) => comment.socialmediadatumId === data.id
+                          )
                           .map((comment, index) => (
-                            <div key={index}>
-                              <h3>Anonymous : {comment.comment}</h3>
+                            <div key={index} style={{ margin: "10px" }}>
+                              <span style={{ color: "orange" }}>
+                                Anonymous :
+                              </span>
+                              <span style={{ color: "white" }}>
+                                {" "}
+                                {comment.comment}
+                              </span>
                             </div>
                           ))}
                       </div>
