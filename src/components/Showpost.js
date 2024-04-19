@@ -2,18 +2,23 @@ import React, { useEffect, useRef, useState } from "react";
 import axios from "axios";
 
 const Showpost = (props) => {
-  const [userdata, setUserData] = useState();
+  const [userdata, setUserData] = useState([]);
   const [loading, setLoading] = useState(true);
-  const [displaycomment, setDisplayComment] = useState(true);
   const [commentdata, setCommentData] = useState([]);
   const [callapi, setCallApi] = useState(false);
 
   const [commenttext, setCommentText] = useState("");
+  const [displaycomment, setDisplayComment] = useState(null);
+ 
 
   // const commentref = useRef('');
 
-  function hideComments() {
-    setDisplayComment(!displaycomment);
+  function hideComments(index) {
+    if (displaycomment === index) {
+      setDisplayComment(null);
+    } else {
+      setDisplayComment(index);
+    }
   }
 
   function commentDataHandler(id, e) {
@@ -101,13 +106,11 @@ const Showpost = (props) => {
               </p>
               <button
                 style={{ margin: "10px", fontSize: "20px" }}
-                onClick={hideComments}
+                onClick={() => hideComments(index)}
               >
                 Add Comment
               </button>
-              {displaycomment ? (
-                <div></div>
-              ) : (
+              {displaycomment === index && (
                 <div>
                   <form
                     onSubmit={(e) => commentDataHandler(data.id, e)}
